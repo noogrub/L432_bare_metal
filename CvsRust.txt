@@ -1,0 +1,54 @@
+Comparison Table STM L432KC Dec 2025
+C versus Rust
+
+This test compiles a simple program in C and in Rust, then measures .text size (code in flash), .rodata size (const data in flash), .data size (init data copied to RAM at boot; stored in flash too), .bss size (zero-init RAM), total flash used = .text + .rodata + .data + vector table + anything else mapped to flash, and total RAM used at runtime baseline
+
+Minimum viable code should:
+	boot (vector table + reset handler),
+	run deterministically in an infinite loop,
+	touch at least one real peripheral register (so it’s not a “hosted” illusion),
+	have no I/O stack (no printf/USB/UART) to avoid pulling in a big runtime,
+	give us a “heartbeat” we can verify (LED pin toggle is ideal).
+
+Stage 0 — Base: boot + loop + GPIO toggle
+	No interrupts, no timers.
+	Just a busy-wait delay loop so we can see it blink.
+	This yields a baseline that mostly measures:
+	startup/runtime (C crt0 vs Rust runtime glue in no_std)
+	vector table + minimal exception handlers
+	link-time garbage collection effects
+Stage 1 — Const table in flash (.rodata)
+	Add a fixed lookup table, e.g. const uint16_t LUT[128] = {...};
+	This intentionally inflates .rodata so you can see it track exactly.
+	No algorithmic complexity yet.
+Stage 2 — Ring buffer in RAM (.bss)
+	Add uint16_t ring[256]; and push an incrementing counter.
+	This cleanly increases .bss.
+	Still no peripherals beyond GPIO.
+Stage 3 — Timer-based tick (one real interrupt)
+	Now we add a timer interrupt at, say, 100 Hz.
+	This forces us to define an ISR and a vector entry.
+	This is where Rust’s interrupt/ownership story starts to matter.
+Stage 4 — Fake ADC via volatile register read
+	Not the real ADC yet—just a “pretend ADC register” read:
+	e.g., read from a volatile memory-mapped address (or a dummy global volatile).
+	This tests “volatile semantics” without pulling in ADC setup complexity.
+Stage 5 — Real internal temperature sensor via ADC
+	Now we do the real thing.
+	The nice part: the chip gives us the temperature calibration constants in system memory, so you can do a “real-ish” temperature computation without any external sensor. The datasheet even lists the calibration values and their addresses:
+	TS_CAL1 at 0x1FFF 75A8 - 0x1FFF 75A9 (measured near 30 °C)
+	TS_CAL2 at 0x1FFF 75CA - 0x1FFF 75CB (measured near 130 °C) 
+	That is a perfect “feature E” because it’s genuinely hardware-based and gives you a meaningful endcap.
+
+
+Code                      | .text size | .rodata size | .data size | .bss size | total flash | total RAM 
+============================================================================================================
+                          |  C  - Rust |   C  - Rust  |  C  - Rust | C  - Rust |  C  - Rust  | C    - Rust |
+============================================================================================================
+Stage 0 blinky            | 160        | 0            | 0          | 0         | 224         | 2048        |
+Stage 1 Const flash table | 716        | 0            | 0          | 0         | 780         | 2048        | *linker merged .rodata into .text
+Stage 2 RAM Ring buffer   | 748        | 0            | 0          | 1028      | 812         | 3076        | *linker merged .rodata into .text
+Stage 3 Timer-based tick  |            |              |            |           |             |             |
+Stage 4 Fake ADC          |            |              |            |           |             |             |
+Stage 5 Temp sensor       |            |              |            |           |             |             |
+
