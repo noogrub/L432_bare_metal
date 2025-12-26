@@ -1,0 +1,1 @@
+{"rustc":18004373081649162931,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[16466029187350799215,"build_script_build",false,1614547149614606578]],"local":[{"RerunIfChanged":{"output":"thumbv7em-none-eabihf/release/build/stage0_rust_blink-1baa7464314792b0/output","paths":[".git/HEAD"]}}],"rustflags":[],"metadata":0,"config":0,"compile_kind":0}

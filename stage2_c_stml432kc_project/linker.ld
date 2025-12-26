@@ -32,8 +32,6 @@ SECTIONS
     *(.eh_frame*)
   } > FLASH
 
-  
-
   /* Firmware identity breadcrumbs (keep even with --gc-sections) */
   .build_id :
   {

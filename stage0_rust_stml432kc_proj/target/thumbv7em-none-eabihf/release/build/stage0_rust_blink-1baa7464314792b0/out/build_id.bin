@@ -1,0 +1,5 @@
+@FWID
+stage=stage0
+target=NUCLEO-L432KC
+git=6fac640
+built=unknown

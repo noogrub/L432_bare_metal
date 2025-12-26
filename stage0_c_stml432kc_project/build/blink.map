@@ -1,0 +1,148 @@
+
+Discarded input sections
+
+ .text          0x0000000000000000        0x0 build/startup.o
+ .data          0x0000000000000000        0x0 build/startup.o
+ .bss           0x0000000000000000        0x0 build/startup.o
+ .group         0x0000000000000000        0xc build/main.o
+ .group         0x0000000000000000        0xc build/main.o
+ .data          0x0000000000000000        0x0 build/main.o
+ .bss           0x0000000000000000        0x0 build/main.o
+ .group         0x0000000000000000        0xc build/build_id.o
+ .text          0x0000000000000000        0x0 build/build_id.o
+ .data          0x0000000000000000        0x0 build/build_id.o
+ .bss           0x0000000000000000        0x0 build/build_id.o
+ .debug_macro   0x0000000000000000      0xa7e build/build_id.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+FLASH            0x0000000008000000 0x0000000000040000 xr
+RAM              0x0000000020000000 0x000000000000c000 xrw
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD build/startup.o
+LOAD build/main.o
+LOAD build/build_id.o
+START GROUP
+LOAD /usr/lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/libgcc.a
+LOAD /usr/lib/gcc/arm-none-eabi/10.3.1/../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc.a
+END GROUP
+                0x0000000000000800                _stack_size = 0x800
+                0x000000002000c000                _estack = (ORIGIN (RAM) + LENGTH (RAM))
+                0x000000002000b800                _sstack = (_estack - _stack_size)
+
+.isr_vector     0x0000000008000000       0x40
+ *(.isr_vector)
+ .isr_vector    0x0000000008000000       0x40 build/startup.o
+                0x0000000008000000                g_pfnVectors
+
+.text           0x0000000008000040      0x1e4
+ *(.text*)
+ .text.Reset_Handler
+                0x0000000008000040       0xac build/startup.o
+                0x0000000008000040                Reset_Handler
+ .text.Default_Handler
+                0x00000000080000ec        0x4 build/startup.o
+                0x00000000080000ec                Default_Handler
+ .text          0x00000000080000f0       0x18 build/main.o
+                0x00000000080000f0                delay_ms
+ .text.startup  0x0000000008000108      0x11c build/main.o
+                0x0000000008000108                main
+ *(.rodata*)
+ *(.glue_7*)
+ .glue_7        0x0000000008000224        0x0 linker stubs
+ .glue_7t       0x0000000008000224        0x0 linker stubs
+ *(.glue_7t*)
+ *(.eh_frame*)
+
+.vfp11_veneer   0x0000000008000224        0x0
+ .vfp11_veneer  0x0000000008000224        0x0 linker stubs
+
+.v4_bx          0x0000000008000224        0x0
+ .v4_bx         0x0000000008000224        0x0 linker stubs
+
+.iplt           0x0000000008000224        0x0
+ .iplt          0x0000000008000224        0x0 build/startup.o
+
+.build_id       0x0000000008000224       0xb5
+ *(.build_id)
+ .build_id      0x0000000008000224       0xb5 build/build_id.o
+                0x0000000008000224                g_build_id
+
+.rel.dyn        0x00000000080002dc        0x0
+ .rel.iplt      0x00000000080002dc        0x0 build/startup.o
+
+.data           0x0000000020000000        0x0 load address 0x0000000008000224
+                0x0000000020000000                _sdata = .
+ *(.data*)
+                0x0000000020000000                _edata = .
+                0x0000000008000224                _sidata = LOADADDR (.data)
+
+.igot.plt       0x0000000020000000        0x0
+ .igot.plt      0x0000000020000000        0x0 build/startup.o
+
+.bss            0x0000000020000000        0x0
+                0x0000000020000000                _sbss = .
+ *(.bss*)
+ *(COMMON)
+                0x0000000020000000                _ebss = .
+                0x0000000020000000                _end = .
+                0x0000000000000001                ASSERT ((_ebss <= _sstack), ERROR: RAM overflow: .bss overlaps reserved stack)
+OUTPUT(build/blink.elf elf32-littlearm)
+LOAD linker stubs
+
+.ARM.attributes
+                0x0000000000000000       0x35
+ .ARM.attributes
+                0x0000000000000000       0x25 build/startup.o
+ .ARM.attributes
+                0x0000000000000025       0x34 build/main.o
+ .ARM.attributes
+                0x0000000000000059       0x39 build/build_id.o
+
+.comment        0x0000000000000000       0x33
+ .comment       0x0000000000000000       0x33 build/main.o
+                                         0x34 (size before relaxing)
+ .comment       0x0000000000000033       0x34 build/build_id.o
+
+.debug_info     0x0000000000000000      0x22f
+ .debug_info    0x0000000000000000      0x1d3 build/main.o
+ .debug_info    0x00000000000001d3       0x5c build/build_id.o
+
+.debug_abbrev   0x0000000000000000      0x19a
+ .debug_abbrev  0x0000000000000000      0x150 build/main.o
+ .debug_abbrev  0x0000000000000150       0x4a build/build_id.o
+
+.debug_loc      0x0000000000000000       0xa5
+ .debug_loc     0x0000000000000000       0xa5 build/main.o
+
+.debug_aranges  0x0000000000000000       0x40
+ .debug_aranges
+                0x0000000000000000       0x28 build/main.o
+ .debug_aranges
+                0x0000000000000028       0x18 build/build_id.o
+
+.debug_ranges   0x0000000000000000       0x38
+ .debug_ranges  0x0000000000000000       0x38 build/main.o
+
+.debug_macro    0x0000000000000000      0xeca
+ .debug_macro   0x0000000000000000       0xed build/main.o
+ .debug_macro   0x00000000000000ed      0xa7e build/main.o
+ .debug_macro   0x0000000000000b6b      0x34e build/main.o
+ .debug_macro   0x0000000000000eb9       0x11 build/build_id.o
+
+.debug_line     0x0000000000000000      0x2a2
+ .debug_line    0x0000000000000000      0x277 build/main.o
+ .debug_line    0x0000000000000277       0x2b build/build_id.o
+
+.debug_str      0x0000000000000000     0x3b00
+ .debug_str     0x0000000000000000     0x3aea build/main.o
+                                       0x3c54 (size before relaxing)
+ .debug_str     0x0000000000003aea       0x16 build/build_id.o
+                                       0x2d0e (size before relaxing)
+
+.debug_frame    0x0000000000000000       0x38
+ .debug_frame   0x0000000000000000       0x38 build/main.o

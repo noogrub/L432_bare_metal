@@ -1,0 +1,24 @@
+[package]
+name = "stage0_rust_blink"
+version = "0.1.0"
+edition = "2021"
+
+# Build script only generates build_id bytes (no runtime impact)
+build = "build.rs"
+
+[dependencies]
+
+[profile.dev]
+panic = "abort"
+opt-level = 2
+lto = true
+codegen-units = 1
+debug = 2
+
+[profile.release]
+panic = "abort"
+opt-level = 2
+lto = true
+codegen-units = 1
+debug = 0
+strip = true

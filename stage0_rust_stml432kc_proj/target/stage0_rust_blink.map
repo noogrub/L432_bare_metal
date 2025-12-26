@@ -1,0 +1,39 @@
+     VMA      LMA     Size Align Out     In      Symbol
+       0        0        0     1 _stack_size = 0x800
+       0        0        0     1 _estack = ORIGIN ( RAM ) + LENGTH ( RAM )
+       0        0        0     1 _sstack = _estack - _stack_size
+ 8000000  8000000        8     1 .isr_vector
+ 8000000  8000000        8     1         /home/jwb/STM32CubeIDE/L432/L432_bare_metal/stage0_rust_stml432lc_proj/target/thumbv7em-none-eabihf/release/deps/stage0_rust_blink-b4bca97e25a21ec9.stage0_rust_blink.ca73ac2fbb3bd0dc-cgu.0.rcgu.o:(.isr_vector)
+ 8000008  8000008       10     4 .ARM.exidx
+ 8000008  8000008       10     4         <internal>:(.ARM.exidx)
+ 8000018  8000018      1b0     4 .text
+ 8000018  8000018       84     2         /home/jwb/STM32CubeIDE/L432/L432_bare_metal/stage0_rust_stml432lc_proj/target/thumbv7em-none-eabihf/release/deps/stage0_rust_blink-b4bca97e25a21ec9.stage0_rust_blink.ca73ac2fbb3bd0dc-cgu.0.rcgu.o:(.text.Reset_Handler)
+ 8000018  8000018        0     1                 $t.0
+ 8000019  8000019       84     1                 Reset_Handler
+ 800009c  800009c       10     2         /home/jwb/STM32CubeIDE/L432/L432_bare_metal/stage0_rust_stml432lc_proj/target/thumbv7em-none-eabihf/release/deps/stage0_rust_blink-b4bca97e25a21ec9.stage0_rust_blink.ca73ac2fbb3bd0dc-cgu.0.rcgu.o:(.text._ZN17stage0_rust_blink12delay_cycles17h8441c9d144a7cfd8E)
+ 800009c  800009c        0     1                 $t.1
+ 800009d  800009d       10     1                 stage0_rust_blink::delay_cycles::h8441c9d144a7cfd8
+ 80000ac  80000ac       10     2         /home/jwb/STM32CubeIDE/L432/L432_bare_metal/stage0_rust_stml432lc_proj/target/thumbv7em-none-eabihf/release/deps/stage0_rust_blink-b4bca97e25a21ec9.stage0_rust_blink.ca73ac2fbb3bd0dc-cgu.0.rcgu.o:(.text._ZN17stage0_rust_blink8delay_ms17h1ebd581e8480e2b9E)
+ 80000ac  80000ac        0     1                 $t.2
+ 80000ad  80000ad       10     1                 stage0_rust_blink::delay_ms::h1ebd581e8480e2b9
+ 80000bc  80000bc      10c     2         /home/jwb/STM32CubeIDE/L432/L432_bare_metal/stage0_rust_stml432lc_proj/target/thumbv7em-none-eabihf/release/deps/stage0_rust_blink-b4bca97e25a21ec9.stage0_rust_blink.ca73ac2fbb3bd0dc-cgu.0.rcgu.o:(.text.main)
+ 80000bc  80000bc        0     1                 $t.3
+ 80000bd  80000bd      10c     1                 main
+ 80001c8  80001c8       42     1 .build_id
+ 80001c8  80001c8       42     1         /home/jwb/STM32CubeIDE/L432/L432_bare_metal/stage0_rust_stml432lc_proj/target/thumbv7em-none-eabihf/release/deps/stage0_rust_blink-b4bca97e25a21ec9.stage0_rust_blink.ca73ac2fbb3bd0dc-cgu.0.rcgu.o:(.build_id)
+ 80001c8  80001c8       42     1                 stage0_rust_blink::BUILD_ID::h583deec40c5a75e9
+20000000 20000000        0     1 .data
+20000000 20000000        0     1         _sdata = .
+20000000 20000000        0     1         _edata = .
+20000000 20000000        0     1 _sidata = LOADADDR ( .data )
+20000000 20000000        0     1 .bss
+20000000 20000000        0     1         _sbss = .
+20000000 20000000        0     1         _ebss = .
+20000000 20000000        0     1 _end = .
+20000000 20000000        0     1 
+       0        0       40     1 .comment
+       0        0       40     1         <internal>:(.comment)
+       0        0       3a     1 .ARM.attributes
+       0        0       3a     1         /home/jwb/STM32CubeIDE/L432/L432_bare_metal/stage0_rust_stml432lc_proj/target/thumbv7em-none-eabihf/release/deps/stage0_rust_blink-b4bca97e25a21ec9.stage0_rust_blink.ca73ac2fbb3bd0dc-cgu.0.rcgu.o:(.ARM.attributes)
+       0        0       56     1 .shstrtab
+       0        0       56     1         <internal>:(.shstrtab)

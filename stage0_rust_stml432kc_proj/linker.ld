@@ -32,8 +32,6 @@ SECTIONS
     *(.eh_frame*)
   } > FLASH
 
-  
-
   /* Firmware identity breadcrumbs (keep even with --gc-sections) */
   .build_id :
   {
@@ -63,4 +61,4 @@ SECTIONS
 }
 
 /* Enforce that .data/.bss do not overlap the reserved 2 KiB stack area */
-ASSERT(_ebss <= _sstack, "ERROR: RAM overflow: .bss overlaps reserved stack");	
+ASSERT(_ebss <= _sstack, "ERROR: RAM overflow: .bss overlaps reserved stack");

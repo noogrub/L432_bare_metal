@@ -5,6 +5,7 @@
 .global  g_pfnVectors
 .global  Reset_Handler
 .global  Default_Handler
+.global  SysTick_Handler
 
 /* Minimal vector table.
  * We only wire Reset_Handler; everything else loops in Default_Handler.
@@ -32,7 +33,7 @@ g_pfnVectors:
   .word  Default_Handler + 1 /* DebugMon */
   .word  0
   .word  Default_Handler + 1 /* PendSV */
-  .word  Default_Handler + 1 /* SysTick */
+  .word  SysTick_Handler + 1 /* SysTick */
 .size g_pfnVectors, . - g_pfnVectors
 
 /* Reset handler:
@@ -45,6 +46,11 @@ g_pfnVectors:
 Reset_Handler:
   ldr r0, =_estack
   mov sp, r0
+
+  /* Set VTOR = 0x08000000 (vector table in flash) */
+  ldr r0, =0xE000ED08     /* SCB_VTOR */
+  ldr r1, =0x08000000
+  str r1, [r0]
 
   /* EARLY RESET SIGNATURE: PB3 ON briefly, then OFF */
 
@@ -132,3 +138,13 @@ Default_Handler:
 8:
   wfe
   b 8b
+
+.section .text.SysTick_Handler,"ax",%progbits
+SysTick_Handler:
+  ldr r0, =g_systick_ms
+  ldr r1, [r0]
+  adds r1, r1, #1
+  str r1, [r0]
+  bx lr
+
+

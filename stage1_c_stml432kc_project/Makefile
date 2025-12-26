@@ -4,7 +4,7 @@
 TARGET     := blink
 BUILD_DIR  := build
 
-BUILD_STAGE := stage0
+BUILD_STAGE := stage1
 BUILD_TARGET := NUCLEO-L432KC
 GIT_HASH     := $(shell git rev-parse --short HEAD 2>/dev/null || echo nogit)
 

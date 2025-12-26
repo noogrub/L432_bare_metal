@@ -1,0 +1,9 @@
+[build]
+target = "thumbv7em-none-eabihf"
+
+[target.thumbv7em-none-eabihf]
+rustflags = [
+  "-C", "link-arg=-Tlinker.ld",
+  "-C", "link-arg=--gc-sections",
+  "-C", "link-arg=-Map=target/stage0_rust_blink.map",
+]

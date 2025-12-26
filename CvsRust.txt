@@ -45,7 +45,7 @@ Code                      | .text size | .rodata size | .data size | .bss size |
 ============================================================================================================
                           |  C  - Rust |   C  - Rust  |  C  - Rust | C  - Rust |  C  - Rust  | C    - Rust |
 ============================================================================================================
-Stage 0 blinky            | 160        | 0            | 0          | 0         | 224         | 2048        |
+Stage 0 blinky            | 160   432  | 0            | 0          | 0         | 224   644   | 2048        |
 Stage 1 Const flash table | 716        | 0            | 0          | 0         | 780         | 2048        | *linker merged .rodata into .text
 Stage 2 RAM Ring buffer   | 748        | 0            | 0          | 1028      | 812         | 3076        | *linker merged .rodata into .text
 Stage 3 Timer-based tick  |            |              |            |           |             |             |

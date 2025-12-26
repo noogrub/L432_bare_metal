@@ -1,22 +1,12 @@
+/* ------------------------------------
+   Stage 1 add SysTick to Stage0 blinky
+------------------------------------ */
 #include <stdint.h>
-
+#include "runtime.h"
 /* -----------------------------
    Minimal register access
 ----------------------------- */
 #define REG32(addr) (*(volatile uint32_t *)(addr))
-
-/* Core SysTick (polling, no IRQ) */
-#define SYST_CSR           REG32(0xE000E010u)
-#define SYST_RVR           REG32(0xE000E014u)
-#define SYST_CVR           REG32(0xE000E018u)
-#define SYST_CSR_ENABLE    (1u << 0)
-#define SYST_CSR_TICKINT   (1u << 1)
-#define SYST_CSR_CLKSOURCE (1u << 2)
-#define SYST_CSR_COUNTFLAG (1u << 16)
-
-/* Cortex-M: disable/enable IRQ */
-static inline void irq_off(void) { __asm__ volatile ("cpsid i" ::: "memory"); }
-static inline void irq_on(void)  { __asm__ volatile ("cpsie i" ::: "memory"); }
 
 /* -----------------------------
    STM32L432 RCC + GPIOB + SYSCFG
@@ -62,6 +52,12 @@ static inline void irq_on(void)  { __asm__ volatile ("cpsie i" ::: "memory"); }
 #define SYSCFG_CFGR1_TRACESWO_DISABLE (1u << 24)
 
 /* -----------------------------
+   System clock contract
+   SYSCLK = MSI @ 4 MHz
+----------------------------- */
+#define SYSCLK_HZ 4000000u
+
+/* -----------------------------
    Deterministic clock bring-up
    Force SYSCLK = MSI @ 4 MHz
 ----------------------------- */
@@ -85,23 +81,6 @@ static void clock_init_msi_4mhz(void)
     }
 }
 
-/* -----------------------------
-   SysTick polling delay (no IRQ)
-   Assumes SYSCLK = 4 MHz
------------------------------ */
-#define SYSCLK_HZ 4000000u
-
-static void delay_cycles(volatile uint32_t cycles)
-{
-    while (cycles--) { __asm volatile ("nop"); }
-}
-
-void delay_ms(uint32_t ms)
-{
-    /* crude: assumes ~4 MHz core clock; adjust later */
-    while (ms--) delay_cycles(4000);
-}
-
 static void gpio_init_pb3_led(void)
 {
     /* Clocks */
@@ -119,36 +98,41 @@ static void gpio_init_pb3_led(void)
     GPIOB_BSRR = (1u << (PB3_PIN + 16u));
 }
 
+
 int main(void)
 {
-	/* MAIN SIGNATURE: PB3 ON forever */
+	/* EARLY MAIN SIGNATURE: PB3 on immediately */
 	RCC_AHB2ENR |= RCC_AHB2ENR_GPIOBEN;
 	RCC_APB2ENR |= RCC_APB2ENR_SYSCFGEN;
 	SYSCFG_CFGR1 |= SYSCFG_CFGR1_TRACESWO_DISABLE;
 	GPIOB_MODER &= ~(3u << (PB3_PIN * 2u));
 	GPIOB_MODER |=  (1u << (PB3_PIN * 2u));
 	GPIOB_BSRR = (1u << PB3_PIN);
-	
-	#define SCB_VTOR (*(volatile uint32_t *)0xE000ED08u)
-	SCB_VTOR = 0x08000000u;
 		
-    /* Make startup state deterministic even if flashed/run weirdly */
-    irq_off();
-    SYST_CSR = 0u; SYST_RVR = 0u; SYST_CVR = 0u;
+    runtime_irq_disable();
 
     clock_init_msi_4mhz();
     gpio_init_pb3_led();
 
-    /* Signature: solid ON 2 seconds, then blink */
-    GPIOB_BSRR = (1u << PB3_PIN);      /* ON */
-    delay_ms(500u);
-    GPIOB_BSRR = (1u << (PB3_PIN + 16u)); /* OFF */
-    delay_ms(250u);
+    runtime_init(SYSCLK_HZ);
+    runtime_irq_enable();
 
-    /* We keep interrupts OFF in Stage0 (not needed). */
+    /* guard window: prove SysTick and IRQs are alive */
+    GPIOB_BSRR = (1u << PB3_PIN);
+    runtime_delay_ms(150u);
+    GPIOB_BSRR = (1u << (PB3_PIN + 16u));
+    runtime_delay_ms(150u);
+
+
+    /* Signature: solid ON 500s, 250ms off, then blink every 500ms */
+    GPIOB_BSRR = (1u << PB3_PIN);      /* ON */
+    runtime_delay_ms(500u);
+    GPIOB_BSRR = (1u << (PB3_PIN + 16u)); /* OFF */
+    runtime_delay_ms(250u);
 
     while (1) {
         GPIOB_ODR ^= (1u << 3);
-        delay_ms(50);
+        //delay_ms(50);
+        runtime_delay_ms(500);
     }
 }
