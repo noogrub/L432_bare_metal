@@ -1,108 +1,152 @@
-# STM32L432KC C vs Rust Metrics — Stage 2 (Bare-metal LED blink + minimal runtime boundary)
+# Stage 3 — Explicit Initialization & Architecture Isolation
 
-Target: **NUCLEO-L432KC** (STM32L432KC, Cortex-M4F, 256 KB flash, 48 KB SRAM)
+Target: **STM32L432KC (NUCLEO-L432KC)**  
+Language: **C (freestanding, bare metal)**
 
-## Stage 2 goal
-- Preserve **Stage1 behavior exactly** (timing, LED signatures, determinism).
-- Introduce a **minimal, explicit runtime boundary**.
-- Ensure application code never touches:
-  - SysTick registers
-  - interrupt enable/disable instructions
-  - timebase internals
+Stage 3 focuses on *architectural clarity*. No new features are added. No behavior changes are introduced.
+The goal is to make hardware ownership explicit, isolate responsibilities, and prepare the codebase for
+cross-device experiments (e.g., STM32N7) without refactoring logic.
 
-Stage2 is about **structure**, not new features.
+---
 
-## What Stage 2 adds (vs Stage 1)
-- Adds `runtime.c` / `runtime.h`.
-- Runtime layer owns:
-  - SysTick configuration
-  - millisecond tick counter
-  - delay services
-  - explicit IRQ enable/disable helpers
-- Moves tick-counter ownership out of `main.c` and into the runtime layer.
-- Refactors `main.c` to depend only on runtime APIs for time and IRQ policy.
+## Stage 3 Goals
 
-## What Stage 2 does NOT add
-- No HAL / CMSIS
-- No libc
-- No UART, printf, semihosting
-- No dynamic allocation
-- No new interrupts beyond SysTick
-- No behavior change in LED patterns
+- Separate **architecture**, **MCU**, and **board** concerns
+- Eliminate implicit hardware dependencies from `main.c`
+- Make clock, board, and runtime policy explicit and inspectable
+- Preserve deterministic startup and measurable footprints
+- Enable painless MCU and board swaps in later stages
 
-## LED mapping (board)
-- User LED **LD3** is connected to **PB3** (Arduino D13).
+---
 
-## File responsibilities (critical invariant)
-- `startup.s`
-  - Vector table and reset handler
-  - `.data` copy and `.bss` zero
-  - Early reset LED signature
-  - `SysTick_Handler` increments runtime-owned tick
-- `runtime.c` / `runtime.h`
-  - Owns timebase and interrupt policy
-  - Configures SysTick @ 1 kHz
-  - Provides `runtime_delay_ms()`, `runtime_millis()`
-- `main.c`
-  - Application logic only
-  - GPIO init and LED pattern
-  - No direct SysTick or IRQ manipulation
-- `build_id.c` + `linker.ld`
-  - Firmware identity breadcrumbs in `.build_id`
-  - Section explicitly kept via linker `KEEP()`
+## Layered Architecture
 
-## Build prerequisites (Debian / WSL)
-- `arm-none-eabi-gcc`
-- `make`
-- `stlink-tools`
-- Optional: `binutils-arm-none-eabi`
+Stage 3 establishes the following layers, from lowest to highest:
 
-## One-time flash / USB setup
-Use:
-- `STLINK_WSL_Flashing_Checklist.md`
+### 1. Architecture layer (`arch_*`)
+**Example:** `arch_cortexm_baremetal.h`
 
-## Build
-From this folder:
+Owns:
+- Cortex-M core registers (SysTick)
+- IRQ enable/disable primitives
+- CPU-architecture concerns only
 
-```bash
-make clean
-make
+Does **not** know:
+- Which MCU is used
+- Which board or pins exist
+
+---
+
+### 2. MCU layer (`mcu_*`)
+**Example:** `mcu_stm32l4xx_baremetal.h`
+
+Owns:
+- STM32L4xx register base addresses
+- RCC, GPIO, SYSCFG bit definitions actually used by this project
+- Vendor / silicon-specific knowledge
+
+Intentionally:
+- Minimal
+- Incomplete
+- Non-CMSIS
+- Non-HAL
+
+---
+
+### 3. Board layer (`board_*`, `init_board.*`)
+
+Owns:
+- Board-visible hardware (LEDs, pins, diagnostics)
+- Mapping from abstract signals ("board LED") to MCU resources
+- Early diagnostic signatures
+
+Examples:
+- `board_early_signature()`
+- `board_led_on()`, `board_led_off()`, `board_led_toggle()`
+
+---
+
+### 4. Init layer (`init_*`)
+
+Owns:
+- One-time hardware bring-up policy
+
+Examples:
+- `init_clock()` — system clock policy
+- `init_board()` — board GPIO bring-up
+
+Each init unit:
+- Does exactly one job
+- Has no side effects outside its contract
+
+---
+
+### 5. Runtime layer (`runtime.*`)
+
+Owns:
+- Time base (SysTick)
+- Millisecond delays
+- Interrupt policy wrappers
+
+Does **not**:
+- Touch RCC, GPIO, or board details directly
+
+---
+
+### 6. Application layer (`main.c`)
+
+Owns:
+- Control flow
+- System sequencing
+- Intent
+
+Knows nothing about:
+- Registers
+- Addresses
+- Pins
+- MCU families
+
+---
+
+## `mcu.h` — Single-Point MCU Selection
+
+All MCU-specific headers are routed through:
+
+```c
+#include "mcu.h"
 ```
 
-Outputs:
-- `build/blink.elf`
-- `build/blink.bin`
-- `build/blink.map`
+Switching MCU families (e.g., STM32L4 → STM32N7) is intended to be a
+**one-line change** inside `mcu.h`, followed by updating the corresponding
+`mcu_<family>_baremetal.h` file.
 
-## Flash
-```bash
-st-flash write build/blink.bin 0x08000000
-```
+---
 
-## Runtime behavior (signature)
-Must match Stage1 exactly:
-- Early reset LED pulse (startup)
-- Early main signature pulse
-- Guard window proving SysTick + IRQ are alive
-- Steady blink pattern driven by runtime timebase
+## What Changed from Stage 2
 
-## Metrics capture
-### Size summary
-```bash
-arm-none-eabi-size build/blink.elf
-```
+- Clock bring-up moved out of `main`
+- Board GPIO configuration isolated
+- Architecture vs MCU responsibilities separated
+- Duplicate register definitions eliminated
+- `main.c` reduced to orchestration only
 
-### Size by section
-```bash
-arm-none-eabi-size -A build/blink.elf
-```
+Behavior is intentionally identical to Stage 2.
 
-### Confirm section placement
-```bash
-arm-none-eabi-readelf -S build/blink.elf
-arm-none-eabi-objdump -h build/blink.elf
-```
+---
 
-## Notes
-- Stage2 footprint should remain very close to Stage1.
-- Any future change to timing or sleep semantics must occur inside the runtime layer, not in application code.
+## What Stage 3 Enables
+
+- Clean comparison across STM32 families
+- Controlled experiments on footprint and startup cost
+- Incremental addition of peripherals without architectural drift
+- Future Rust/C comparisons on an identical hardware contract
+
+---
+
+## Next Stage Preview (Stage 4)
+
+- Swap to a different STM32 device (e.g., STM32N7)
+- Validate architecture portability
+- Introduce additional peripherals under the same layering rules
+
+Stage 3 is complete when this structure is stable and documented.

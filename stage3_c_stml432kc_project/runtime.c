@@ -1,11 +1,7 @@
 /* runtime.c — minimal explicit runtime services */
 
 #include "runtime.h"
-
-/* -----------------------------
-   Minimal register access
------------------------------ */
-#define REG32(addr) (*(volatile uint32_t *)(addr))
+#include "arch_cortexm_baremetal.h"
 
 /* SysTick registers */
 #define SYST_CSR           REG32(0xE000E010u)
@@ -18,18 +14,14 @@
 /* Global tick counter (incremented in SysTick_Handler) */
 volatile uint32_t g_systick_ms = 0;
 
-/* Cortex-M IRQ control */
-static inline void irq_off(void) { __asm__ volatile ("cpsid i" ::: "memory"); }
-static inline void irq_on(void)  { __asm__ volatile ("cpsie i" ::: "memory"); }
-
 void runtime_irq_disable(void)
 {
-    irq_off();
+    arch_irq_disable();
 }
 
 void runtime_irq_enable(void)
 {
-    irq_on();
+    arch_irq_enable();
 }
 
 void runtime_init(uint32_t sysclk_hz)

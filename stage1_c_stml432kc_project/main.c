@@ -1,5 +1,5 @@
 /* ------------------------------------
-   Stage 1 add SysTick to Stage0 blinky
+   See Stage1 README.md
 ------------------------------------ */
 #include <stdint.h>
 

@@ -1,11 +1,11 @@
-# Hand-rolled STM32L432KC Stage 2 blink (no HAL)
+# Hand-rolled STM32L432KC Stage 3
 # John/Gigi experiment scaffolding — keep it simple and inspectable.
 # See individual README.md in each stage directory for make/run instructions
 
 TARGET     := blink
 BUILD_DIR  := build
 
-BUILD_STAGE := stage2
+BUILD_STAGE := stage3
 BUILD_TARGET := NUCLEO-L432KC
 GIT_HASH     := $(shell git rev-parse --short HEAD 2>/dev/null || echo nogit)
 
@@ -26,7 +26,7 @@ LDFLAGS    := $(CPUFLAGS) -nostartfiles -Wl,--gc-sections \
               -Wl,-Map=$(BUILD_DIR)/$(TARGET).map \
               -T linker.ld
 
-SRCS       := startup.s main.c build_id.c runtime.c
+SRCS       := startup.s main.c build_id.c runtime.c init_clock.c init_board.c board.c
 
 OBJS       := $(addprefix $(BUILD_DIR)/,$(SRCS:.c=.o))
 OBJS       := $(OBJS:.s=.o)

@@ -1,4 +1,4 @@
-# Hand-rolled STM32L432KC Stage 0 blink (no HAL)
+# Hand-rolled STM32L432KC Stage 1 
 # John/Gigi experiment scaffolding — keep it simple and inspectable.
 
 TARGET     := blink

@@ -39,12 +39,13 @@ SECTIONS
   } > FLASH
 
   /* Initialized data copied from FLASH to RAM at boot */
-  .data : AT (ADDR(.text) + SIZEOF(.text))
+  /* Initialized data copied from FLASH to RAM at boot */
+  .data :
   {
     _sdata = .;
     *(.data*)
     _edata = .;
-  } > RAM
+  } > RAM AT > FLASH
   _sidata = LOADADDR(.data);
 
   /* Zero-init data in RAM */
