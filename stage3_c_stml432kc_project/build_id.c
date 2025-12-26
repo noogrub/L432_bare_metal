@@ -4,7 +4,7 @@
 // This does not require UART/printf/semihosting; it is just constant data in flash.
 
 #ifndef BUILD_STAGE
-#define BUILD_STAGE "stage2"
+#define BUILD_STAGE "stage3"
 #endif
 
 #ifndef BUILD_TARGET
