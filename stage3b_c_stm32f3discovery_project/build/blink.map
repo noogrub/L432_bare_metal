@@ -1,0 +1,257 @@
+
+Discarded input sections
+
+ .data          0x0000000000000000        0x0 build/startup.o
+ .bss           0x0000000000000000        0x0 build/startup.o
+ .group         0x0000000000000000        0xc build/main.o
+ .group         0x0000000000000000        0xc build/main.o
+ .group         0x0000000000000000        0xc build/main.o
+ .text          0x0000000000000000        0x0 build/main.o
+ .data          0x0000000000000000        0x0 build/main.o
+ .bss           0x0000000000000000        0x0 build/main.o
+ .group         0x0000000000000000        0xc build/build_id.o
+ .text          0x0000000000000000        0x0 build/build_id.o
+ .data          0x0000000000000000        0x0 build/build_id.o
+ .bss           0x0000000000000000        0x0 build/build_id.o
+ .debug_macro   0x0000000000000000      0xa72 build/build_id.o
+ .group         0x0000000000000000        0xc build/runtime.o
+ .group         0x0000000000000000        0xc build/runtime.o
+ .group         0x0000000000000000        0xc build/runtime.o
+ .data          0x0000000000000000        0x0 build/runtime.o
+ .debug_macro   0x0000000000000000      0xa72 build/runtime.o
+ .debug_macro   0x0000000000000000      0x34e build/runtime.o
+ .group         0x0000000000000000        0xc build/init_clock.o
+ .group         0x0000000000000000        0xc build/init_clock.o
+ .data          0x0000000000000000        0x0 build/init_clock.o
+ .bss           0x0000000000000000        0x0 build/init_clock.o
+ .debug_macro   0x0000000000000000      0xa72 build/init_clock.o
+ .debug_macro   0x0000000000000000      0x34e build/init_clock.o
+ .group         0x0000000000000000        0xc build/init_board.o
+ .group         0x0000000000000000        0xc build/init_board.o
+ .group         0x0000000000000000        0xc build/init_board.o
+ .data          0x0000000000000000        0x0 build/init_board.o
+ .bss           0x0000000000000000        0x0 build/init_board.o
+ .debug_macro   0x0000000000000000      0xa72 build/init_board.o
+ .debug_macro   0x0000000000000000      0x34e build/init_board.o
+ .group         0x0000000000000000        0xc build/board.o
+ .group         0x0000000000000000        0xc build/board.o
+ .group         0x0000000000000000        0xc build/board.o
+ .data          0x0000000000000000        0x0 build/board.o
+ .bss           0x0000000000000000        0x0 build/board.o
+ .debug_macro   0x0000000000000000      0xa72 build/board.o
+ .debug_macro   0x0000000000000000      0x34e build/board.o
+ .debug_macro   0x0000000000000000       0x10 build/board.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+FLASH            0x0000000008000000 0x0000000000040000 xr
+RAM              0x0000000020000000 0x000000000000a000 xrw
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD build/startup.o
+LOAD build/main.o
+LOAD build/build_id.o
+LOAD build/runtime.o
+LOAD build/init_clock.o
+LOAD build/init_board.o
+LOAD build/board.o
+START GROUP
+LOAD /usr/lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/libgcc.a
+LOAD /usr/lib/gcc/arm-none-eabi/10.3.1/../../../arm-none-eabi/lib/thumb/v7e-m/nofp/libc.a
+END GROUP
+                0x0000000000000800                _stack_size = 0x800
+                0x000000002000a000                _estack = (ORIGIN (RAM) + LENGTH (RAM))
+                0x0000000020009800                _sstack = (_estack - _stack_size)
+
+.isr_vector     0x0000000008000000      0x190
+ *(.isr_vector)
+ .isr_vector    0x0000000008000000      0x190 build/startup.o
+
+.text           0x0000000008000190      0x198
+ *(.text*)
+ .text          0x0000000008000190       0x48 build/startup.o
+                0x0000000008000194                Reset_Handler
+ .text.Default_Handler
+                0x00000000080001d8        0x2 build/startup.o
+                0x00000000080001d8                DebugMon_Handler
+                0x00000000080001d8                HardFault_Handler
+                0x00000000080001d8                PendSV_Handler
+                0x00000000080001d8                NMI_Handler
+                0x00000000080001d8                UsageFault_Handler
+                0x00000000080001d8                Default_Handler
+                0x00000000080001d8                MemManage_Handler
+                0x00000000080001d8                SVC_Handler
+                0x00000000080001d8                BusFault_Handler
+ *fill*         0x00000000080001da        0x2 
+ .text.startup  0x00000000080001dc       0x54 build/main.o
+                0x00000000080001dc                main
+ .text          0x0000000008000230       0x64 build/runtime.o
+                0x0000000008000230                SysTick_Handler
+                0x0000000008000240                runtime_irq_disable
+                0x0000000008000244                runtime_irq_enable
+                0x0000000008000248                runtime_init
+                0x000000000800026c                runtime_millis
+                0x0000000008000278                runtime_delay_ms
+ .text          0x0000000008000294        0x4 build/init_clock.o
+                0x0000000008000294                init_clock
+ .text          0x0000000008000298       0x80 build/init_board.o
+                0x0000000008000298                board_early_signature
+                0x00000000080002c0                init_board
+                0x00000000080002e8                board_led_on
+                0x00000000080002f8                board_led_off
+                0x0000000008000308                board_led_toggle
+ .text          0x0000000008000318       0x10 build/board.o
+                0x0000000008000318                board_init
+ *(.rodata*)
+ *(.glue_7*)
+ .glue_7        0x0000000008000328        0x0 linker stubs
+ .glue_7t       0x0000000008000328        0x0 linker stubs
+ *(.glue_7t*)
+ *(.eh_frame*)
+
+.vfp11_veneer   0x0000000008000328        0x0
+ .vfp11_veneer  0x0000000008000328        0x0 linker stubs
+
+.v4_bx          0x0000000008000328        0x0
+ .v4_bx         0x0000000008000328        0x0 linker stubs
+
+.iplt           0x0000000008000328        0x0
+ .iplt          0x0000000008000328        0x0 build/startup.o
+
+.build_id       0x0000000008000328       0xc1
+ *(.build_id)
+ .build_id      0x0000000008000328       0xc1 build/build_id.o
+                0x0000000008000328                g_build_id
+
+.rel.dyn        0x00000000080003ec        0x0
+ .rel.iplt      0x00000000080003ec        0x0 build/startup.o
+
+.data           0x0000000020000000        0x0 load address 0x00000000080003e9
+                0x0000000020000000                _sdata = .
+ *(.data*)
+                0x0000000020000000                _edata = .
+                0x00000000080003e9                _sidata = LOADADDR (.data)
+
+.igot.plt       0x0000000020000000        0x0 load address 0x00000000080003e9
+ .igot.plt      0x0000000020000000        0x0 build/startup.o
+
+.bss            0x0000000020000000        0x4 load address 0x00000000080003e9
+                0x0000000020000000                _sbss = .
+ *(.bss*)
+ .bss           0x0000000020000000        0x4 build/runtime.o
+                0x0000000020000000                g_systick_ms
+ *(COMMON)
+                0x0000000020000004                _ebss = .
+                0x0000000020000004                _end = .
+                0x0000000000000001                ASSERT ((_ebss <= _sstack), ERROR: RAM overflow: .bss overlaps reserved stack)
+OUTPUT(build/blink.elf elf32-littlearm)
+LOAD linker stubs
+
+.ARM.attributes
+                0x0000000000000000       0x2f
+ .ARM.attributes
+                0x0000000000000000       0x21 build/startup.o
+ .ARM.attributes
+                0x0000000000000021       0x2e build/main.o
+ .ARM.attributes
+                0x000000000000004f       0x33 build/build_id.o
+ .ARM.attributes
+                0x0000000000000082       0x2e build/runtime.o
+ .ARM.attributes
+                0x00000000000000b0       0x2e build/init_clock.o
+ .ARM.attributes
+                0x00000000000000de       0x2e build/init_board.o
+ .ARM.attributes
+                0x000000000000010c       0x2e build/board.o
+
+.comment        0x0000000000000000       0x33
+ .comment       0x0000000000000000       0x33 build/main.o
+                                         0x34 (size before relaxing)
+ .comment       0x0000000000000033       0x34 build/build_id.o
+ .comment       0x0000000000000033       0x34 build/runtime.o
+ .comment       0x0000000000000033       0x34 build/init_clock.o
+ .comment       0x0000000000000033       0x34 build/init_board.o
+ .comment       0x0000000000000033       0x34 build/board.o
+
+.debug_info     0x0000000000000000      0x635
+ .debug_info    0x0000000000000000      0x1c1 build/main.o
+ .debug_info    0x00000000000001c1       0x5c build/build_id.o
+ .debug_info    0x000000000000021d      0x188 build/runtime.o
+ .debug_info    0x00000000000003a5       0x82 build/init_clock.o
+ .debug_info    0x0000000000000427      0x15d build/init_board.o
+ .debug_info    0x0000000000000584       0xb1 build/board.o
+
+.debug_abbrev   0x0000000000000000      0x373
+ .debug_abbrev  0x0000000000000000       0x8d build/main.o
+ .debug_abbrev  0x000000000000008d       0x4a build/build_id.o
+ .debug_abbrev  0x00000000000000d7      0x108 build/runtime.o
+ .debug_abbrev  0x00000000000001df       0x47 build/init_clock.o
+ .debug_abbrev  0x0000000000000226       0xd8 build/init_board.o
+ .debug_abbrev  0x00000000000002fe       0x75 build/board.o
+
+.debug_aranges  0x0000000000000000       0xb8
+ .debug_aranges
+                0x0000000000000000       0x20 build/main.o
+ .debug_aranges
+                0x0000000000000020       0x18 build/build_id.o
+ .debug_aranges
+                0x0000000000000038       0x20 build/runtime.o
+ .debug_aranges
+                0x0000000000000058       0x20 build/init_clock.o
+ .debug_aranges
+                0x0000000000000078       0x20 build/init_board.o
+ .debug_aranges
+                0x0000000000000098       0x20 build/board.o
+
+.debug_ranges   0x0000000000000000       0x40
+ .debug_ranges  0x0000000000000000       0x10 build/main.o
+ .debug_ranges  0x0000000000000010       0x30 build/init_board.o
+
+.debug_macro    0x0000000000000000      0xfa3
+ .debug_macro   0x0000000000000000       0x41 build/main.o
+ .debug_macro   0x0000000000000041      0xa72 build/main.o
+ .debug_macro   0x0000000000000ab3      0x34e build/main.o
+ .debug_macro   0x0000000000000e01       0x10 build/main.o
+ .debug_macro   0x0000000000000e11       0x11 build/build_id.o
+ .debug_macro   0x0000000000000e22       0x51 build/runtime.o
+ .debug_macro   0x0000000000000e73       0x34 build/runtime.o
+ .debug_macro   0x0000000000000ea7       0x2a build/init_clock.o
+ .debug_macro   0x0000000000000ed1       0x37 build/init_board.o
+ .debug_macro   0x0000000000000f08       0x64 build/init_board.o
+ .debug_macro   0x0000000000000f6c       0x37 build/board.o
+
+.debug_line     0x0000000000000000      0x4d0
+ .debug_line    0x0000000000000000       0xd3 build/main.o
+ .debug_line    0x00000000000000d3       0x2b build/build_id.o
+ .debug_line    0x00000000000000fe      0x13e build/runtime.o
+ .debug_line    0x000000000000023c       0x85 build/init_clock.o
+ .debug_line    0x00000000000002c1      0x162 build/init_board.o
+ .debug_line    0x0000000000000423       0xad build/board.o
+
+.debug_str      0x0000000000000000     0x3a60
+ .debug_str     0x0000000000000000     0x36d7 build/main.o
+                                       0x3843 (size before relaxing)
+ .debug_str     0x00000000000036d7       0x16 build/build_id.o
+                                       0x2ce7 (size before relaxing)
+ .debug_str     0x00000000000036ed      0x15b build/runtime.o
+                                       0x390d (size before relaxing)
+ .debug_str     0x0000000000003848       0x18 build/init_clock.o
+                                       0x379b (size before relaxing)
+ .debug_str     0x0000000000003860      0x200 build/init_board.o
+                                       0x39e6 (size before relaxing)
+ .debug_str     0x0000000000003a60      0x200 build/board.o
+                                       0x37c3 (size before relaxing)
+
+.debug_frame    0x0000000000000000      0x144
+ .debug_frame   0x0000000000000000       0x28 build/main.o
+ .debug_frame   0x0000000000000028       0x70 build/runtime.o
+ .debug_frame   0x0000000000000098       0x20 build/init_clock.o
+ .debug_frame   0x00000000000000b8       0x60 build/init_board.o
+ .debug_frame   0x0000000000000118       0x2c build/board.o
+
+.debug_loc      0x0000000000000000       0x64
+ .debug_loc     0x0000000000000000       0x3a build/runtime.o
+ .debug_loc     0x000000000000003a       0x2a build/init_board.o
